@@ -1,4 +1,5 @@
 import HttpError from "../helpers/HttpError.js";
+import { checkUserUnicEmail } from "../helpers/checkUserUnicEmail.js";
 import ctrlWrapper from "../helpers/ctrlWrapper.js";
 import { userService } from "../services/userService.js";
 
@@ -23,9 +24,8 @@ const getUserById = (req, res) => {
 const postUser = (req, res) => {
   const user = req.user;
   const { phoneNumber, email } = user;
-  const isNotAvailableEmail = userService.search({ email });
-  if (isNotAvailableEmail)
-    throw HttpError(409, "Conflict! Email is not available");
+  const unicEmail = checkUserUnicEmail(email); // with register ignore
+  if (!unicEmail) throw HttpError(409, "Conflict! Email is not available");
   const isNotAvailableNumber = userService.search({ phoneNumber });
   if (isNotAvailableNumber)
     throw HttpError(409, "Conflict! Phone number is not available");
