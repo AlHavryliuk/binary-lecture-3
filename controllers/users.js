@@ -1,5 +1,4 @@
 import HttpError from "../helpers/HttpError.js";
-import { checkUserUnicEmail } from "../helpers/checkUserUnicEmail.js";
 import ctrlWrapper from "../helpers/ctrlWrapper.js";
 import { userService } from "../services/userService.js";
 
@@ -7,51 +6,49 @@ import { userService } from "../services/userService.js";
 
 const getAllUsers = (req, res, next) => {
   const users = userService.getAll();
-  res.json({ users });
+  req.response = { response: users };
+  next();
 };
 
 // Controller function to get a user by ID
 
-const getUserById = (req, res) => {
+const getUserById = (req, res, next) => {
   const { id } = req.params;
   const user = userService.search({ id });
   if (!user) throw HttpError(404, "User not found");
-  res.json({ user });
+  req.response = { response: user };
+  next();
 };
 
 // Controller function to create a new user
 
-const postUser = (req, res) => {
+const postUser = (req, res, next) => {
   const user = req.user;
-  const { phoneNumber, email } = user;
-  const unicEmail = checkUserUnicEmail(email); // with register ignore
-  if (!unicEmail) throw HttpError(409, "Conflict! Email is not available");
-  const isNotAvailableNumber = userService.search({ phoneNumber });
-  if (isNotAvailableNumber)
-    throw HttpError(409, "Conflict! Phone number is not available");
   const response = userService.create(user);
-  res.status(201).json(response);
+  req.response = { status: 201, response };
+
+  console.log(2);
+
+  next();
 };
 
 // Controller function to create a new user
 
-const putUser = (req, res) => {
+const putUser = (req, res, next) => {
   const newUserData = req.user;
   const { id } = newUserData;
   const response = userService.patch(id, newUserData);
-  res.status(201).json(response);
+  req.response = { status: 201, response };
+  next();
 };
 
 // Controller function to delete a user
 
-const deleteUser = (req, res) => {
+const deleteUser = (req, res, next) => {
   const { id } = req.params;
-  const user = userService.search({ id });
-  if (!user) throw HttpError(404, "User not found");
   userService.remove(id);
-  res
-    .status(204)
-    .json({ message: "No Content! User has been deleted successfully" });
+  req.response = { status: 204 };
+  next();
 };
 
 // Exporting wrapped controller functions
