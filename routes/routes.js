@@ -6,7 +6,7 @@ import { router as fightRoutes } from "./fightRoutes.js";
 const initRoutes = (app) => {
   app.use("/api/users", userRoutes);
   app.use("/api/fighters", fighterRoutes);
-  // app.use("/api/fights", fightRoutes);
+  app.use("/api/fights", fightRoutes);
   app.use("/api/auth", authRoutes);
 
   app.use((req, res) => {
